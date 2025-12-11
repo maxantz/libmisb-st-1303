@@ -10,10 +10,10 @@ public:
 	~MDArray();
 
 	template<typename... Args>
-	void SetValue(double value, Args ...);
+	void SetValue(double value, Args... args);
 
 	template<typename... Args>
-	double getValue(Args ...);
+	double GetValue(Args... args) const;
 
 	void Resize(const std::vector<uint32_t>& dimensions);
 
@@ -21,6 +21,9 @@ public:
 	std::vector<uint8_t> ToBytes() const;
 
 	std::string ToString() const;
+private:
+	template<typename... Args>
+	size_t _getIndex(Args... args) const;
 private:
 	uint8_t m_dataType{0x03};
 	std::vector<uint32_t> m_dimensions;

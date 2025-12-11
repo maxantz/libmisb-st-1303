@@ -8,19 +8,34 @@ MDArray::MDArray()
 
 MDArray::MDArray(const std::vector<uint32_t>& dimensions) : m_dimensions(dimensions)
 {
+	// calcule la taille du vecteur datas
+	size_t l_taille = 1;
+	for (auto l_iter : m_dimensions)
+		l_taille *= l_iter;
 	// reservation vecteur datas
+	m_datas.resize(l_taille);
 }
 
 MDArray::~MDArray()
 {
 	// vidage des vecteurs
+	m_dimensions.clear();
+	m_datas.clear();
 }
 
 void MDArray::Resize(const std::vector<uint32_t>& dimensions)
 {
 	// vidage des vecteurs
+	m_dimensions.clear();
+	m_datas.clear();
 	// affectation vecteur dimensions
+	m_dimensions = dimensions;
+	// calcule la taille du vecteur datas
+	size_t l_taille = 1;
+	for (auto l_iter : m_dimensions)
+		l_taille *= l_iter;
 	// reservation vecteur datas
+	m_datas.resize(l_taille);
 }
 
 bool MDArray::FromBytes(const std::vector<uint8_t>& value)
@@ -34,6 +49,7 @@ bool MDArray::FromBytes(const std::vector<uint8_t>& value)
 	// verification type de donnees
 	// verification value.size() > 1 + nb_dimensions * 4 + 1 + somme(dimension nth) * sizeof(float64)
 	// lecture des n valeurs
+	return false;
 }
 
 std::vector<uint8_t> MDArray::ToBytes() const
