@@ -13,3 +13,6 @@ public:
 };
 
 class TestMultiDimensionalArray : public BaseTest {};
+
+#endif
+

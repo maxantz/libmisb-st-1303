@@ -9,7 +9,7 @@ MDArray::MDArray()
 MDArray::MDArray(const std::vector<uint32_t>& dimensions) : m_dimensions(dimensions)
 {
 	// calcule la taille du vecteur datas
-	size_t l_taille = 1;
+	size_t l_taille = sizeof(double);
 	for (auto l_iter : m_dimensions)
 		l_taille *= l_iter;
 	// reservation vecteur datas
@@ -31,7 +31,7 @@ void MDArray::Resize(const std::vector<uint32_t>& dimensions)
 	// affectation vecteur dimensions
 	m_dimensions = dimensions;
 	// calcule la taille du vecteur datas
-	size_t l_taille = 1;
+	size_t l_taille = sizeof(double);
 	for (auto l_iter : m_dimensions)
 		l_taille *= l_iter;
 	// reservation vecteur datas
@@ -40,14 +40,45 @@ void MDArray::Resize(const std::vector<uint32_t>& dimensions)
 
 bool MDArray::FromBytes(const std::vector<uint8_t>& value)
 {
+	// vidage des vecteurs
+	m_dimensions.clear();
+	m_datas.clear();
+
 	// verification value.size() > 1
+	const size_t l_size = value.size();
+	if (l_size < 1) return false;
+
+	size_t l_start = 0;
+
 	// lecture nb_dimensions
-	// verification value.size() > 1 + nb_dimensions * 4
+	const size_t l_dims = static_cast<const size_t>(value[l_start++]) * sizeof(uint32_t);
+	// verification value.size() > 1 + nb_dimensions * sizeof(uint32_t)
+	if (l_size < (l_start + l_dims)) return false;
+
 	// iteration nb_dimensions
-	//     lecture taille dimension nth
-	// verification value.size() > 1 + nb_dimensions * 4 + 1
+	for (size_t l_i = 0; l_i < l_dims; l_i += sizeof(uint32_t))
+	{
+		// lecture taille dimension nth
+		m_dimensions.push_back(static_cast<uint32_t>(value[l_i]<<24 | value[l_i+1]<<16 | value[l_i+2]<<8 | value[l_i+3]));
+	}
+
+	// verification value.size() > 1 + nb_dimensions * sizeof(uint32_t) + 1
+	if (l_size < (1 + l_dims + 1)) return false;
+
 	// verification type de donnees
-	// verification value.size() > 1 + nb_dimensions * 4 + 1 + somme(dimension nth) * sizeof(float64)
+	if (value[1 + l_dims] != 3u) return false;
+
+	// calcule la taille du vecteur datas
+	size_t l_taille = sizeof(double);
+	for (auto l_iter : m_dimensions)
+		l_taille *= l_iter;
+
+	// verification value.size() > 1 + nb_dimensions * sizeof(uint32_t) + 1 + somme(dimension nth) * sizeof(float64)
+	if (l_size < (1 + l_dims + 1 + l_taille * sizeof(double))) return false;
+
+	// reservation vecteur datas
+	m_datas.resize(l_taille);
+	
 	// lecture des n valeurs
 	return false;
 }
