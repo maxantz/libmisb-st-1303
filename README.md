@@ -1,2 +1,2 @@
-# libmist-st-1303
-Implémentation de la norme MIST-ST-1303
+# libmisb-st-1303
+Implémentation de la norme MISB-ST-1303
